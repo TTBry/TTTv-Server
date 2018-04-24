@@ -5,6 +5,8 @@ public class Channel {
 	private int channelId;
 	private String channelName;
 	private String channelAddress;
+	private Category category;
+	
 	public int getChannelId() {
 		return channelId;
 	}
@@ -12,10 +14,11 @@ public class Channel {
 	public Channel(){
 	}
 	
-	public Channel(int channelId, String channelName, String channelAddress) {
+	public Channel(int channelId, String channelName, String channelAddress, Category category) {
 		this.channelId = channelId;
 		this.channelName = channelName;
 		this.channelAddress = channelAddress;
+		this.category = category;
 	}
 
 	public void setChannelId(int channelId) {
@@ -32,6 +35,12 @@ public class Channel {
 	}
 	public void setChannelAddress(String channelAddress) {
 		this.channelAddress = channelAddress;
+	}
+	public Category getCategory() {
+		return category;
+	}
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 	
 }

@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tt.tttv.db.ChannelDB;
+import com.tt.tttv.model.Category;
 import com.tt.tttv.model.Channel;
 
 public class ChannelServlet extends HttpServlet {
@@ -50,6 +51,7 @@ public class ChannelServlet extends HttpServlet {
 	private void add(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String name = request.getParameter("channelName");
 		String address = request.getParameter("channelAddress");
+		String categoryId = request.getParameter("categoryId");
 		JSONObject obj = new JSONObject();
 		
 		if(name == null || "".equals(name)){
@@ -58,8 +60,12 @@ public class ChannelServlet extends HttpServlet {
 		}else if(address == null || "".equals(address)){
 			obj.put("isSuccess", false);
 			obj.put("result", "参数address缺失");
+		}else if(categoryId == null || "".equals(categoryId)){
+			obj.put("isSuccess", false);
+			obj.put("result", "参数categoryId缺失");
 		}else{
-			Channel channel = new Channel(0, name, address);
+			int id = Integer.parseInt(categoryId);
+			Channel channel = new Channel(0, name, address, new Category(id, null));
 			boolean isSuccess = channelDB.addChannel(channel);
 			obj.put("isSuccess", isSuccess);
 			if(!isSuccess){
@@ -91,6 +97,7 @@ public class ChannelServlet extends HttpServlet {
 		String idStr = request.getParameter("channelId");
 		String name = request.getParameter("channelName");
 		String address = request.getParameter("channelAddress");
+		String categoryIdStr = request.getParameter("categoryId");
 		JSONObject obj = new JSONObject();
 		if(idStr == null || "".equals(idStr)){
 			obj.put("isSuccess", false);
@@ -101,9 +108,13 @@ public class ChannelServlet extends HttpServlet {
 		}else if(address == null || "".equals(address)){
 			obj.put("isSuccess", false);
 			obj.put("result", "参数address缺失");
+		}else if(categoryIdStr == null || "".equals(categoryIdStr)){
+			obj.put("isSuccess", false);
+			obj.put("result", "参数categoryId缺失");
 		}else{
 			int id = Integer.valueOf(idStr);
-			Channel channel = new Channel(id, name, address);
+			int categoryId = Integer.valueOf(categoryIdStr);
+			Channel channel = new Channel(id, name, address, new Category(categoryId, null));
 			boolean isSuccess = channelDB.updateChannel(channel);
 			obj.put("isSuccess", isSuccess);
 			if(!isSuccess){

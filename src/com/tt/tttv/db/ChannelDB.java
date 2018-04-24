@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tt.tttv.model.Category;
 import com.tt.tttv.model.Channel;
 import com.tt.tttv.util.DBUtil;
 
@@ -17,15 +18,20 @@ public class ChannelDB {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try{
-			String sql = "select * from tv_channel";
+			StringBuilder sql = new StringBuilder("select channel_id, channel_name, channel_address, tv_channel.category_id, tv_category.category_name");
+			sql.append(" from tv_channel, tv_category");
+			sql.append(" where tv_channel.category_id = tv_category.category_id");
 			conn = DBUtil.getConnection();
-			ps = conn.prepareStatement(sql);
+			ps = conn.prepareStatement(sql.toString());
 			rs = ps.executeQuery();
 			while(rs.next()){
 				int id = rs.getInt(rs.findColumn("channel_id"));
 				String name = rs.getString(rs.findColumn("channel_name"));
 				String address = rs.getString(rs.findColumn("channel_address"));
-				Channel channel = new Channel(id, name, address);
+				int categoryId = rs.getInt(rs.findColumn("category_id"));
+				String categoryName = rs.getString(rs.findColumn("category_name"));
+				Category category = new Category(categoryId, categoryName);
+				Channel channel = new Channel(id, name, address, category);
 				channels.add(channel);
 			}
 		}catch(Exception e){
@@ -43,11 +49,12 @@ public class ChannelDB {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-			String sql = "insert into tv_channel(channel_name, channel_address) values(?, ?)";
+			String sql = "insert into tv_channel(channel_name, channel_address, category_id) values(?, ?, ?)";
 			conn = DBUtil.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, channel.getChannelName());
 			ps.setString(2, channel.getChannelAddress());
+			ps.setInt(3, channel.getCategory().getCategoryId());
 			int line = ps.executeUpdate();
 			if(line > 0){
 				return true;
@@ -87,12 +94,13 @@ public class ChannelDB {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
-			String sql = "update tv_channel set channel_name = ?, channel_address = ? where channel_id = ?";
+			String sql = "update tv_channel set channel_name = ?, channel_address = ?, category_id = ? where channel_id = ?";
 			conn = DBUtil.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, channel.getChannelName());
 			ps.setString(2,  channel.getChannelAddress());
 			ps.setInt(3, channel.getChannelId());
+			ps.setInt(4, channel.getCategory().getCategoryId());
 			int line = ps.executeUpdate();
 			if(line > 0){
 				return true;
